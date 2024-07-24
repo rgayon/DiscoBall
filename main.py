@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import time
 
 from disco import consts as disco_consts
 from disco import ball as disco_ball
@@ -16,6 +17,28 @@ SUBSCRIPTION_NAME = 'ypdb-sub'
 SCOPES = ['https://www.googleapis.com/auth/pubsub']
 
 
+def program(creds, prog):
+  """Initiates a disco program."""
+
+  if prog == disco_consts.DiscoProgram.DEFAULT:
+    message = {
+        'device': disco_consts.DiscoDevice,
+        'action': disco_consts.DiscoAction.BALL_TURN
+    }
+
+    pub(creds, message)
+    time.sleep(10)
+    message = {
+        'device': disco_consts.DiscoDevice,
+        'action': disco_consts.DiscoAction.BALL_STOP
+    }
+
+    pub(creds, message)
+
+  else:
+    print(f'Unknown program {program}')
+
+
 def pub(creds_file, message):
   """Publishes a message to the topic."""
   creds = service_account.Credentials.from_service_account_file(
@@ -25,7 +48,9 @@ def pub(creds_file, message):
   publisher = pubsub_v1.PublisherClient(credentials=creds)
   topic_path = publisher.topic_path(PROJECT_ID, TOPIC_NAME)
   json_message = json.dumps(message).encode('utf-8')
+
   future = publisher.publish(topic_path, json_message)
+
   future.result()
 
 
@@ -38,15 +63,14 @@ def message_callback(message):
   msg = json.loads(message.data.decode('utf-8'))
 
   device = msg['device']
-
   action = msg['action']
 
   if device == disco_consts.DiscoDevice.BALL:
-    ball = ball.Ball()
+    ball = disco_ball.Ball()
     if action == disco_consts.DiscoAction.BALL_STOP:
       ball.stop()
     elif action == disco_consts.DiscoAction.BALL_TURN:
-      ball.turn()
+      ball.start()
     else:
       print(f'Unknown action for Ball: {action}')
 
@@ -56,7 +80,7 @@ def message_callback(message):
     print(f'No such device: {device}')
 
 
-def pull(creds_file):
+def listen(creds_file):
   """Pulls messages from the subscription indefinitely."""
 
   creds = service_account.Credentials.from_service_account_file(
@@ -101,9 +125,9 @@ def main():
 
   if args.action == 'push':
     if args.program:
-      pub(args.creds, args.program)
+      program(args.creds, args.program)
     else:
       print('Specify a program')
   elif args.action == 'pull':
-    pull(args.creds)
+    listen(args.creds)
 

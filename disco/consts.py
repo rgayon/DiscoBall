@@ -22,4 +22,5 @@ class DiscoAction(enum.Enum):
 class DiscoProgram(enum.Enum):
   """Disco programs."""
 
+  NOTHING = 'nothing'
   DEFAULT = 'default'
