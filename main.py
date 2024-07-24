@@ -55,7 +55,7 @@ class Disco:
 
     if prog == disco_consts.DiscoProgram.DEFAULT:
       message = {
-          'device': disco_consts.DiscoDevice,
+          'device': disco_consts.DiscoDevice.BALL,
           'action': disco_consts.DiscoAction.BALL_TURN
       }
 
@@ -98,6 +98,7 @@ class Disco:
     device = msg['device']
     action = msg['action']
 
+    print(class(device))
     if device == disco_consts.DiscoDevice.BALL:
       from disco import ball as disco_ball
       ball = disco_ball.Ball()
