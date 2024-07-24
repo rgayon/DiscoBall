@@ -1,0 +1,6 @@
+{
+  "project_id": "something",
+  "topic_name": "something",
+  "sub_name": "something",
+  "creds_file": "creds.json"
+}
