@@ -21,7 +21,7 @@ class Ball():
     self.rf.tx_repeat = self.REPEAT
 
   def _send_code(self, code):
-    self.rf.tx_code(code, self.PROTOCOL, self.PULSE_LENGTH, self.LENGTH)
+    self.rf.tx_code(code, None, self.PULSE_LENGTH, None)
     self.rf.cleanup()
 
   def start(self):
