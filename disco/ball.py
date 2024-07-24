@@ -7,7 +7,7 @@ class Ball():
   """Class to talk to a 433Mhz controlled motored disco ball."""
 
   STOP_CODE = 13281798
-  START_CODE = 13281786
+  START_CODE = 13281796
 
   GPIO = 17
   REPEAT = 5
