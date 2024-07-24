@@ -7,20 +7,20 @@ class DiscoError(Exception):
   """DiscoError."""
 
 
-class DiscoDevice(enum.Enum):
-  BALL = 'ball'
-  LIGHT = 'light'
+class DiscoDevice(enum.IntEnum):
+  BALL = 1
+  LIGHT = 2
 
 
-class DiscoAction(enum.Enum):
+class DiscoAction(enum.IntEnum):
   """Disco actions."""
 
-  BALL_STOP = 'ballstop'
-  BALL_TURN = 'ballmove'
+  BALL_STOP = 1
+  BALL_TURN = 2
 
 
-class DiscoProgram(enum.Enum):
+class DiscoProgram(enum.IntEnum):
   """Disco programs."""
 
-  NOTHING = 'nothing'
-  DEFAULT = 'default'
+  NOTHING = 1
+  DEFAULT = 2

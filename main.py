@@ -98,7 +98,6 @@ class Disco:
     device = msg['device']
     action = msg['action']
 
-    print(class(device))
     if device == disco_consts.DiscoDevice.BALL:
       from disco import ball as disco_ball
       ball = disco_ball.Ball()
