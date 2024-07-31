@@ -46,6 +46,3 @@ class Light():
 
     cmd = ['ir-ctl', '-S', 'necx:0x'+self.address+self.BUTTONS[button]]
     subprocess.run(cmd)
-
-l = Light()
-l.send_button('BLACK_OUT')
