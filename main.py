@@ -63,7 +63,7 @@ class Disco:
       print('sleeping 10 sec')
       time.sleep(10)
       message = {
-          'device': disco_consts.DiscoDevice,
+          'device': disco_consts.DiscoDevice.BALL,
           'action': disco_consts.DiscoAction.BALL_STOP
       }
 
