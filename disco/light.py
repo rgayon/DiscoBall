@@ -1,8 +1,23 @@
 """Control the light"""
 
+#import logging
+#import sys
 import time
 
-from RPI import GPIO
+from RPi import GPIO
+
+#class Formatter(logging.Formatter):
+#    def formatTime(self, record, datefmt=None):
+#        ct = self.converter(record.created)
+#        if datefmt:
+#            # support %z and %f in datefmt (struct_time doesn't carry ms or tz)
+#            datefmt = datefmt.replace("%f", "%03d" % int(record.msecs))
+#            datefmt = datefmt.replace('%z', time.strftime('%z'))
+#            s = time.strftime(datefmt, ct)
+#        else:
+#            t = time.strftime("%Y-%m-%d %H:%M:%S", ct)
+#            s = "%s,%03d" % (t, record.msecs)
+#        return s
 
 
 class Light():
@@ -15,17 +30,29 @@ class Light():
     self.burst_length_usec = 560
     self.one_length_usec = 2250
     self.zero_length_usec = 1125
+#    console = logging.StreamHandler(sys.stdout)
+#    console.setFormatter(Formatter("%(asctime)s %(message)s", "%a, %d %b %Y %H:%M:%S.%f %z"))
+#    self.l = logging.getLogger(__name__)
+#    self.l.setLevel(logging.INFO)
+#    self.l.addHandler(console)
+
+#    self.tot_slept = 0
 
   def _setup(self):
+#    self.l.info('setup')
+#    pass
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(self.pin, GPIO.OUT)
 
   def _cleanup(self):
     # set up GPIO pin as input for safety
+#    pass
     GPIO.setup(self.pin, GPIO.IN)
 
   def _usleep(self, microsecs):
+#    self.l.info(f'sleep for {microsecs}')
     time.sleep(microsecs/1000000.0)
+    self.tot_slept += microsecs
 
   def _send_burst(self, duration_usec=None):
 
@@ -33,12 +60,13 @@ class Light():
       duration_usec = self.burst_length_usec
 
     pulse_length_usec = (1.0/self.freq) * 1000000
+#    print(pulse_length_usec)
 
     for _ in range(0, int(duration_usec/pulse_length_usec)):
       GPIO.output(self.pin, GPIO.HIGH)
-      self._usleep(pulse_length_usec)
+      self._usleep(pulse_length_usec/2)
       GPIO.output(self.pin, GPIO.LOW)
-      self._usleep(pulse_length_usec)
+      self._usleep(pulse_length_usec/2)
 
   def _send_one(self):
     self.send_burst()
@@ -49,7 +77,6 @@ class Light():
     self._usleep(self.zero_length_usec - self.burst_length_usec)
 
   def _send_sync(self):
-#    print("send sync")
     self._send_burst(9000)
     self._usleep(4500)
 
@@ -65,8 +92,10 @@ class Light():
         self._send_zero()
 
   def send_msg_extended(self, address, command):
+#    self.l.info('about to send burst')
     self._setup()
     self._send_sync()
+#    self.l.info('sent burst')
 
     addr_low = address & 0xFF
     addr_high = (address >> 8) & 0xFF
