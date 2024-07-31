@@ -52,7 +52,7 @@ class Light():
   def _usleep(self, microsecs):
 #    self.l.info(f'sleep for {microsecs}')
     time.sleep(microsecs/1000000.0)
-    self.tot_slept += microsecs
+#    self.tot_slept += microsecs
 
   def _send_burst(self, duration_usec=None):
 
@@ -69,7 +69,7 @@ class Light():
       self._usleep(pulse_length_usec/2)
 
   def _send_one(self):
-    self.send_burst()
+    self._send_burst()
     self._usleep(self.one_length_usec - self.burst_length_usec)
 
   def _send_zero(self):
