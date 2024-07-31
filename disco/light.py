@@ -44,7 +44,7 @@ class Light():
     if button not in self.BUTTONS:
       raise Exception(f'Unknown button {button}')
 
-    cmd = ['ir-ctl', '-S', 'necx:0x:'+self.address+self.BUTTONS[button]]
+    cmd = ['ir-ctl', '-S', 'necx:0x'+self.address+self.BUTTONS[button]]
     subprocess.run(cmd)
 
 l = Light()
