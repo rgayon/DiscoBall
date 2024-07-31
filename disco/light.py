@@ -10,23 +10,24 @@ class Light():
 
   def __init__(self, pin):
     self.pin = pin
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(pin, GPIO.OUT)
 
     self.freq = 38000
     self.burst_length_usec = 560
     self.one_length_usec = 2250
     self.zero_length_usec = 1125
 
-  def cleanup(self):
-    pass
+  def _setup(self):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(self.pin, GPIO.OUT)
+
+  def _cleanup(self):
     # set up GPIO pin as input for safety
     GPIO.setup(self.pin, GPIO.IN)
 
-  def usleep(self, microsecs):
+  def _usleep(self, microsecs):
     time.sleep(microsecs/1000000.0)
 
-  def send_burst(self, duration_usec=None):
+  def _send_burst(self, duration_usec=None):
 
     if not duration_usec:
       duration_usec = self.burst_length_usec
@@ -39,18 +40,18 @@ class Light():
       GPIO.output(self.pin, GPIO.LOW)
       self.usleep(pulse_length_usec)
 
-  def send_one(self):
+  def _send_one(self):
     self.send_burst()
     self.usleep(self.one_length_usec - self.burst_length_usec)
 
-  def send_zero(self):
+  def _send_zero(self):
     self.send_burst()
     self.usleep(self.zero_length_usec - self.burst_length_usec)
 
-  def send_sync(self):
+  def _send_sync(self):
 #    print("send sync")
-    self.send_burst(9000)
-    self.usleep(4500)
+    self._send_burst(9000)
+    self._usleep(4500)
 
   def send_byte(self, byte):
 #    print(f"sending byte {byte}")
@@ -58,13 +59,14 @@ class Light():
     for b in reversed('{:08b}'.format(byte)):
       if b == '1':
 #        print('send one')
-        self.send_one()
+        self._send_one()
       else:
 #        print('send zero')
-        self.send_zero()
+        self._send_zero()
 
   def send_msg_extended(self, address, command):
-    self.send_sync()
+    self._setup()
+    self._send_sync()
 
     addr_low = address & 0xFF
     addr_high = (address >> 8) & 0xFF
@@ -74,6 +76,8 @@ class Light():
 
     self.send_byte(command)
     self.send_byte(0xff ^ command)
+
+    self._cleanup()
 
 
 l = Light(27)
