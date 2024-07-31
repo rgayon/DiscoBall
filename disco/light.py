@@ -2,7 +2,7 @@
 
 import time
 
-import RPi.GPIO as GPIO
+from RPI import GPIO
 
 
 class Light():
@@ -36,17 +36,17 @@ class Light():
 
     for _ in range(0, int(duration_usec/pulse_length_usec)):
       GPIO.output(self.pin, GPIO.HIGH)
-      self.usleep(pulse_length_usec)
+      self._usleep(pulse_length_usec)
       GPIO.output(self.pin, GPIO.LOW)
-      self.usleep(pulse_length_usec)
+      self._usleep(pulse_length_usec)
 
   def _send_one(self):
     self.send_burst()
-    self.usleep(self.one_length_usec - self.burst_length_usec)
+    self._usleep(self.one_length_usec - self.burst_length_usec)
 
   def _send_zero(self):
-    self.send_burst()
-    self.usleep(self.zero_length_usec - self.burst_length_usec)
+    self._send_burst()
+    self._usleep(self.zero_length_usec - self.burst_length_usec)
 
   def _send_sync(self):
 #    print("send sync")
