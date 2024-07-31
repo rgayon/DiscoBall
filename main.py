@@ -55,22 +55,37 @@ class Disco:
 
     if prog == disco_consts.DiscoProgram.DEFAULT:
       message = {
-          'device': disco_consts.DiscoDevice.BALL,
-          'action': disco_consts.DiscoAction.BALL_TURN
+          'todo': [
+              {
+                  'device': disco_consts.DiscoDevice.BALL,
+                  'action': disco_consts.DiscoAction.BALL_TURN
+              },
+              {
+                  'device': disco_consts.DiscoDevice.LIGHT,
+                  'action': disco_consts.DiscoAction.LIGHT_ON
+              }
+          ]
       }
-
       self.publish(message)
       print('sleeping 10 sec')
       time.sleep(10)
       message = {
-          'device': disco_consts.DiscoDevice.BALL,
-          'action': disco_consts.DiscoAction.BALL_STOP
+          'todo': [
+              {
+                  'device': disco_consts.DiscoDevice.BALL,
+                  'action': disco_consts.DiscoAction.BALL_STOP
+              },
+              {
+                  'device': disco_consts.DiscoDevice.LIGHT,
+                  'action': disco_consts.DiscoAction.LIGHT_OFF
+              }
+          ]
       }
 
       self.publish(message)
 
     else:
-      print(f'Unknown program {program}')
+      print(f'Unknown program {prog}')
 
   def publish(self, message):
     """Publishes a message to the topic."""
@@ -95,24 +110,37 @@ class Disco:
       print(f'Can not decode message {message.data}')
       return
 
-    device = msg['device']
-    action = msg['action']
+    for todo in msg['todo']:
 
-    if device == disco_consts.DiscoDevice.BALL:
-      from disco import ball as disco_ball
-      ball = disco_ball.Ball()
-      if action == disco_consts.DiscoAction.BALL_STOP:
-        ball.stop()
-      elif action == disco_consts.DiscoAction.BALL_TURN:
-        ball.start()
+      device = todo['device']
+      action = todo['action']
+
+      if device == disco_consts.DiscoDevice.BALL:
+        from disco import ball as disco_ball
+        ball = disco_ball.Ball()
+        if action == disco_consts.DiscoAction.BALL_STOP:
+          ball.stop()
+        elif action == disco_consts.DiscoAction.BALL_TURN:
+          ball.start()
+        else:
+          print(f'Unknown action for Ball: {action}')
+          return
+
+      elif device == disco_consts.DiscoDevice.LIGHT:
+        from disco import light as disco_light
+        light = disco_light.Light()
+
+        if action == disco_consts.DiscoAction.LIGHT_ON:
+          # Unfortunately, same button for "on" and "off" :(
+          light.send_button('BLACK_OUT')
+        elif action == disco_consts.DiscoAction.LIGHT_OFF:
+          # Unfortunately, same button for "on" and "off" :(
+          light.send_button('BLACK_OUT')
+        else:
+          print(f'Unknown action for Light: {action}')
+          return
       else:
-        print(f'Unknown action for Ball: {action}')
-        return
-
-    elif device == disco_consts.DiscoDevice.LIGHT:
-      print('Disco light not implemented yet')
-    else:
-      print(f'No such device: {device}')
+        print(f'No such device: {device}')
 
   def listen(self):
     """Pulls messages from the subscription indefinitely."""

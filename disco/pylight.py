@@ -24,6 +24,7 @@ class Light():
   """a Light."""
 
   def __init__(self, pin):
+    raise Exception('Do not use this')
     self.pin = pin
 
     self.freq = 38000

@@ -17,6 +17,8 @@ class DiscoAction(enum.IntEnum):
 
   BALL_STOP = 1
   BALL_TURN = 2
+  LIGHT_ON = 3
+  LIGHT_OFF = 4
 
 
 class DiscoProgram(enum.IntEnum):
