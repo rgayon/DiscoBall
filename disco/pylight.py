@@ -1,4 +1,4 @@
-"""Control the light"""
+"""Control the light only via Python. Does not work"""
 
 import logging
 import sys
