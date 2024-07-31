@@ -54,19 +54,18 @@ class Light():
     time.sleep(microsecs/1000000.0)
 #    self.tot_slept += microsecs
 
-  def _send_burst(self, duration_usec=None):
+  def _send_burst(self, duration_usec=None, duty_cycle=33):
 
     if not duration_usec:
       duration_usec = self.burst_length_usec
 
     pulse_length_usec = (1.0/self.freq) * 1000000
-#    print(pulse_length_usec)
 
     for _ in range(0, int(duration_usec/pulse_length_usec)):
       GPIO.output(self.pin, GPIO.HIGH)
-      self._usleep(pulse_length_usec/2)
+      self._usleep(pulse_length_usec * (duty_cycle/100.0))
       GPIO.output(self.pin, GPIO.LOW)
-      self._usleep(pulse_length_usec/2)
+      self._usleep(pulse_length_usec * ((100-duty_cycle) / 100.0))
 
   def _send_one(self):
     self._send_burst()
